@@ -97,6 +97,9 @@
    </property>
   </action>
   <action name="actionLineas">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Lineas</string>
    </property>

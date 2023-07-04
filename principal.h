@@ -42,6 +42,14 @@ private slots:
 
     void on_actionGuardar_triggered();
 
+    void on_actionLineas_triggered();
+
+    void on_actionLibre_triggered();
+
+    void on_actionRect_nculos_triggered();
+
+    void on_actionCircunferencias_triggered();
+
 private:
     Ui::Principal *ui;
     QImage *mImagen;        // Imagen sobre la que se va a dibujar
@@ -52,5 +60,12 @@ private:
     int mAncho;             // Define el ancho del pincel
     QColor mColor;          // Define el color del pincel
     int mNumLineas;         // Cuenta el número de líneas
+    QPoint mPunto1;
+    QPoint mPunto2;
+    enum Cases{
+      LINEAS, LIBRE, CUADRADO, CIRCUFERENCIA
+    };
+    Cases m_Case;
+
 };
 #endif // PRINCIPAL_H

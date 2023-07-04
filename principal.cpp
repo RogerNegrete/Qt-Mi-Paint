@@ -45,9 +45,36 @@ void Principal::mousePressEvent(QMouseEvent *event)
     mPuedeDibujar = true;
     // Captura la posición (punto x,y) del mouse
     mInicial = event->pos();
-    // Acepta el evento
+
+    if (!mPunto1.isNull()) {
+        mPunto2 = event->pos();
+
+        // Dibuja el rectángulo o la circunferencia entre los dos puntos
+        QPen pincel;
+        pincel.setColor(mColor);
+        pincel.setWidth(mAncho);
+        mPainter->setPen(pincel);
+
+        if (m_Case == CUADRADO) {
+           // QRect rect(mPunto1, mPunto2);
+            //mPainter->drawRect(rect);
+        } else if (m_Case == CIRCUFERENCIA) {
+            QRect rect(mPunto1, mPunto2);
+            mPainter->drawEllipse(rect);
+
+
+        update();
+
+        // Reinicia los puntos para el próximo dibujo
+        mPunto1 = QPoint();
+        mPunto2 = QPoint();
+    } else {
+        mPunto1 = event->pos();
+    }
+
     event->accept();
 }
+
 
 void Principal::mouseMoveEvent(QMouseEvent *event)
 {
@@ -58,21 +85,51 @@ void Principal::mouseMoveEvent(QMouseEvent *event)
         // Salir del método
         return;
     }
-    // Capturar el punto a donde se mueve el mouse
-    mFinal = event->pos();
-    // Crear un pincel y establecer atributos
     QPen pincel;
+
     pincel.setColor(mColor);
     pincel.setWidth(mAncho);
     // Dibujar una linea
     mPainter->setPen(pincel);
-    mPainter->drawLine(mInicial, mFinal);
+
+    switch (m_Case) {
+    case LINEAS:
+ mFinal = event->pos();
+        mPainter->drawLine(mPunto1, mPunto2);
+            mInicial = mFinal;
+        break;
+    case LIBRE:
+        // Capturar el punto a donde se mueve el mouse
+        mFinal = event->pos();
+        // Crear un pincel y establecer atributos
+
+
+        mPainter->drawLine(mInicial, mFinal);
+        update();
+        // actualizar el punto inicial
+        mInicial = mFinal;
+
+        break;
+    case CUADRADO:
+        mPainter->setPen(pincel);
+        QRect rect(mPunto1, mPunto2);
+        mPainter->drawRect(rect);
+        mFinal = event->pos();
+        break;
+    case CIRCUFERENCIA:
+        mFinal = event->pos();
+        mPainter->drawEllipse(QRect(mInicial, mFinal));
+           mInicial = mFinal;
+        break;
+
+    }
     // Mostrar el número de líneas en la barra de estado
     ui->statusbar->showMessage("Número de líneas: " + QString::number(++mNumLineas));
     // Actualizar la interfaz (repinta con paintEvent)
     update();
     // actualizar el punto inicial
     mInicial = mFinal;
+
 }
 
 void Principal::mouseReleaseEvent(QMouseEvent *event)
@@ -110,6 +167,8 @@ void Principal::on_actionNuevo_triggered()
 {
     mImagen->fill(Qt::white);
     mNumLineas = 0;
+    mPunto1 = QPoint();
+    mPunto2 = QPoint();
     update();
 }
 
@@ -136,3 +195,27 @@ void Principal::on_actionGuardar_triggered()
         }
     }
 }
+
+void Principal::on_actionLineas_triggered()
+{
+    m_Case = LINEAS;
+}
+
+
+void Principal::on_actionLibre_triggered()
+{
+    m_Case=LIBRE;
+}
+
+
+void Principal::on_actionRect_nculos_triggered()
+{
+    m_Case=CUADRADO;
+}
+
+
+void Principal::on_actionCircunferencias_triggered()
+{
+    m_Case=CIRCUFERENCIA;
+}
+
