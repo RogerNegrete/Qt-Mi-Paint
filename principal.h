@@ -50,6 +50,8 @@ private slots:
 
     void on_actionCircunferencias_triggered();
 
+    void on_actionLineas_checkableChanged(bool checkable);
+
 private:
     Ui::Principal *ui;
     QImage *mImagen;        // Imagen sobre la que se va a dibujar

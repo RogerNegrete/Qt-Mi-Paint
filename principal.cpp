@@ -20,6 +20,7 @@ Principal::Principal(QWidget *parent)
     mColor = Qt::black;
     mAncho = DEFAULT_ANCHO;
     mNumLineas = 0;
+    m_Case = LIBRE; //Para que empieze dibujando Libre
 }
 
 Principal::~Principal()
@@ -45,23 +46,44 @@ void Principal::mousePressEvent(QMouseEvent *event)
     mPuedeDibujar = true;
     // Captura la posición (punto x,y) del mouse
     mInicial = event->pos();
+    // Check if mPunto1 and mPunto2 are set
 
+    if (!mPunto1.isNull() && !mPunto2.isNull()) {
+        mPunto1 = mPunto2 = QPoint();
+    }
     if (!mPunto1.isNull()) {
         mPunto2 = event->pos();
+        //Verifica SI esta el Checked
+        if (ui->actionLineas->isChecked()) {
+            m_Case = LINEAS;
+        } else if (ui->actionLibre->isChecked()) {
+            m_Case = LIBRE;
+        } else if (ui->actionRect_nculos->isChecked()) {
+            m_Case = CUADRADO;
+        } else if (ui->actionCircunferencias->isChecked()) {
+            m_Case = CIRCUFERENCIA;
+        }
 
-        // Dibuja el rectángulo o la circunferencia entre los dos puntos
+        // Draw the line, square or circle between the two points
         QPen pincel;
         pincel.setColor(mColor);
         pincel.setWidth(mAncho);
         mPainter->setPen(pincel);
+        if(m_Case == LINEAS){
+            // Capture the mouse position (x, y point)
+            mPainter->drawLine(mPunto1, mPunto2);
 
-        if (m_Case == CUADRADO) {
-           // QRect rect(mPunto1, mPunto2);
-            //mPainter->drawRect(rect);
+        } else if(m_Case==LIBRE){
+            mPainter->drawLine(mInicial, event->pos());
+        } else if (m_Case == CUADRADO) {
+            // Captura la posición (punto x,y) del mouse
+            QRect rect(mPunto1, mPunto2);
+            mPainter->drawRect(rect);
         } else if (m_Case == CIRCUFERENCIA) {
+            // Captura la posición (punto x,y) del mouse
             QRect rect(mPunto1, mPunto2);
             mPainter->drawEllipse(rect);
-
+        }
 
         update();
 
@@ -86,6 +108,8 @@ void Principal::mouseMoveEvent(QMouseEvent *event)
         return;
     }
     QPen pincel;
+    QRect rect;
+    mFinal = event->pos();
 
     pincel.setColor(mColor);
     pincel.setWidth(mAncho);
@@ -94,34 +118,21 @@ void Principal::mouseMoveEvent(QMouseEvent *event)
 
     switch (m_Case) {
     case LINEAS:
- mFinal = event->pos();
         mPainter->drawLine(mPunto1, mPunto2);
-            mInicial = mFinal;
         break;
     case LIBRE:
-        // Capturar el punto a donde se mueve el mouse
-        mFinal = event->pos();
-        // Crear un pincel y establecer atributos
-
-
         mPainter->drawLine(mInicial, mFinal);
-        update();
-        // actualizar el punto inicial
-        mInicial = mFinal;
 
         break;
     case CUADRADO:
         mPainter->setPen(pincel);
-        QRect rect(mPunto1, mPunto2);
+        rect = QRect(mPunto1, mPunto2);  // Solo asigna el valor aquí
         mPainter->drawRect(rect);
-        mFinal = event->pos();
+
         break;
     case CIRCUFERENCIA:
-        mFinal = event->pos();
         mPainter->drawEllipse(QRect(mInicial, mFinal));
-           mInicial = mFinal;
         break;
-
     }
     // Mostrar el número de líneas en la barra de estado
     ui->statusbar->showMessage("Número de líneas: " + QString::number(++mNumLineas));
@@ -217,5 +228,15 @@ void Principal::on_actionRect_nculos_triggered()
 void Principal::on_actionCircunferencias_triggered()
 {
     m_Case=CIRCUFERENCIA;
+}
+
+
+void Principal::on_actionLineas_checkableChanged(bool checkable)
+{
+    if(Qt::Checked) {
+            m_Case = LINEAS;
+        } else {
+            // Código que maneja cuando actionLineas se deselecciona
+        }
 }
 

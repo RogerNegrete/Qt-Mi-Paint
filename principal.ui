@@ -23,7 +23,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuArchivo">
@@ -100,6 +100,9 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Lineas</string>
    </property>
@@ -113,11 +116,20 @@
    </property>
   </action>
   <action name="actionRect_nculos">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Rectánculos</string>
    </property>
   </action>
   <action name="actionCircunferencias">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Circunferencias</string>
    </property>
